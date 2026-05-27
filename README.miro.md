@@ -4,6 +4,8 @@
 
 ## Architecture
 
+![Architecture diagram](./docs/architecture.png)
+
 ```mermaid
 flowchart TB
     User([User / Browser]):::actor

@@ -4,7 +4,7 @@
 
 ## Architecture
 
-![Architecture diagram](./docs/architecture.png)
+<iframe width="768" height="640" src="https://miro.com/app/live-embed/uXjVHN_wgn4=/?focusWidget=3458764673404826258&embedMode=view_only_without_ui&embedId=422220096386" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
 
 ```mermaid
 flowchart TB

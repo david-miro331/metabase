@@ -6,79 +6,38 @@
 
 ```mermaid
 flowchart TB
-    User([User / Browser]):::actor
+ subgraph public["Public Edge"]
+        users["Users"]
+        cdn["CloudFront"]
+  end
+ subgraph data["Data Tier"]
+        primary["Primary DB"]
+        replica["Read Replica"]
+        cache["Redis Cache"]
+        backups["Backups"]
+  end
+ subgraph vpc["VPC"]
+        lb["Load Balancer"]
+        web1["App Server A"]
+        web2["App Server B"]
+        data
+  end
+    users --> cdn
+    cdn --> lb
+    lb --> web1 & web2
+    web1 --> cache & primary
+    web2 --> cache & primary
+    primary --> replica & backups
 
-    subgraph Frontend["frontend/ — TypeScript + React"]
-        UI[UI Components<br/>Dashboards, Question Builder, Admin]:::fe
-        EmbedSDK[Embedding SDK]:::fe
-    end
-
-    subgraph Backend["src/metabase/ — Clojure Backend"]
-        API[api / api_routes<br/>REST endpoints]:::gateway
-        Auth[auth_provider<br/>session • api_keys]:::gateway
-        Perms[permissions]:::gateway
-
-        subgraph Core["Core Domain"]
-            Models[models<br/>Card, Dashboard, User, DB...]:::core
-            Queries[queries / dashboards / collections]:::core
-            Search[search]:::core
-            Notif[notification / pulse<br/>Alerts & scheduled reports]:::core
-            Settings[settings]:::core
-            Cache[cache]:::core
-        end
-
-        QP[query_processor<br/>MBQL → SQL/Native]:::pipeline
-        DriverAPI[driver / driver_api<br/>Driver interface]:::pipeline
-    end
-
-    subgraph Drivers["modules/drivers/ — Database Connectors"]
-        D1[Postgres]:::driver
-        D2[MySQL]:::driver
-        D3[BigQuery]:::driver
-        D4[Snowflake]:::driver
-        D5[... 20+ more]:::driver
-    end
-
-    subgraph Enterprise["enterprise/ — Commercial features"]
-        EE[SSO, Sandboxing, Audit,<br/>Advanced Embedding, Serialization]:::ee
-    end
-
-    DB[(App DB<br/>H2 / Postgres / MySQL)]:::store
-    DataDBs[(User Data<br/>Warehouses)]:::store
-
-    User --> UI
-    User --> EmbedSDK
-    UI -->|HTTP/JSON| API
-    EmbedSDK -->|HTTP/JSON| API
-
-    API --> Auth
-    API --> Perms
-    API --> Core
-    Core --> QP
-    QP --> DriverAPI
-    DriverAPI --> Drivers
-    Drivers --> DataDBs
-
-    Models --> DB
-    Settings --> DB
-    Notif --> DriverAPI
-
-    Enterprise -.extends.-> Backend
-
-    classDef actor    fill:#CFD8DC,stroke:#37474F,color:#102027,stroke-width:3px
-    classDef fe       fill:#BBDEFB,stroke:#1565C0,color:#0D47A1,stroke-width:3px
-    classDef gateway  fill:#B2DFDB,stroke:#00796B,color:#004D40,stroke-width:3px
-    classDef core     fill:#C8E6C9,stroke:#2E7D32,color:#1B5E20,stroke-width:3px
-    classDef pipeline fill:#DCEDC8,stroke:#689F38,color:#33691E,stroke-width:3px
-    classDef driver   fill:#FFE0B2,stroke:#E65100,color:#BF360C,stroke-width:3px
-    classDef ee       fill:#E1BEE7,stroke:#6A1B9A,color:#4A148C,stroke-width:3px
-    classDef store    fill:#ECEFF1,stroke:#37474F,color:#102027,stroke-width:3px
-
-    style Frontend   fill:#F5FAFE,stroke:#1565C0,stroke-width:2px,color:#0D47A1
-    style Backend    fill:#F6FBF6,stroke:#2E7D32,stroke-width:2px,color:#1B5E20
-    style Core       fill:#FBFEF8,stroke:#558B2F,stroke-width:1.5px,color:#33691E
-    style Drivers    fill:#FFF8F2,stroke:#E65100,stroke-width:2px,color:#BF360C
-    style Enterprise fill:#FBF6FD,stroke:#6A1B9A,stroke-width:2px,color:#4A148C
+    users@{ icon: "fa:user", pos: "b"}
+    cdn@{ icon: "aws:arch-amazon-cloudfront", pos: "b"}
+    lb@{ icon: "aws:arch-elastic-load-balancing", pos: "b"}
+    web1@{ icon: "aws:arch-amazon-ec2", pos: "b"}
+    web2@{ icon: "aws:arch-amazon-ec2", pos: "b"}
+    primary@{ icon: "aws:arch-amazon-rds", pos: "b"}
+    replica@{ icon: "aws:arch-amazon-rds", pos: "b"}
+    cache@{ icon: "aws:arch-amazon-elasticache", pos: "b"}
+    backups@{ icon: "aws:arch-aws-backup", pos: "b"}
 ```
 
 ## Get started

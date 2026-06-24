@@ -5,39 +5,33 @@
 ## Architecture
 
 ```mermaid
-flowchart TB
- subgraph public["Public Edge"]
-        users["Users"]
-        cdn["CloudFront"]
-  end
- subgraph data["Data Tier"]
-        primary["Primary DB"]
-        replica["Read Replica"]
-        cache["Redis Cache"]
-        backups["Backups"]
-  end
- subgraph vpc["VPC"]
-        lb["Load Balancer"]
-        web1["App Server A"]
-        web2["App Server B"]
-        data
-  end
-    users --> cdn
-    cdn --> lb
-    lb --> web1 & web2
-    web1 --> cache & primary
-    web2 --> cache & primary
-    primary --> replica & backups
+architecture-beta
+    group public(internet)[Public Edge]
+    group vpc(cloud)[VPC]
+    group data(database)[Data Tier] in vpc
 
-    users@{ icon: "fa:user", pos: "b"}
-    cdn@{ icon: "aws:arch-amazon-cloudfront", pos: "b"}
-    lb@{ icon: "aws:arch-elastic-load-balancing", pos: "b"}
-    web1@{ icon: "aws:arch-amazon-ec2", pos: "b"}
-    web2@{ icon: "aws:arch-amazon-ec2", pos: "b"}
-    primary@{ icon: "aws:arch-amazon-rds", pos: "b"}
-    replica@{ icon: "aws:arch-amazon-rds", pos: "b"}
-    cache@{ icon: "aws:arch-amazon-elasticache", pos: "b"}
-    backups@{ icon: "aws:arch-aws-backup", pos: "b"}
+    service users(aws:arch-users)[Users] in public
+    service cdn(aws:arch-amazon-cloudfront)[CloudFront] in public
+
+    service lb(aws:arch-elastic-load-balancing)[Load Balancer] in vpc
+    service web1(aws:arch-amazon-ec2)[App Server A] in vpc
+    service web2(aws:arch-amazon-ec2)[App Server B] in vpc
+
+    service primary(aws:arch-amazon-rds)[Primary DB] in data
+    service replica(aws:arch-amazon-rds)[Read Replica] in data
+    service cache(aws:arch-amazon-elasticache)[Redis Cache] in data
+    service backups(aws:arch-aws-backup)[Backups] in data
+
+    users:B --> T:cdn
+    cdn:B --> T:lb
+    lb:B --> T:web1
+    lb:B --> T:web2
+    web1:B --> T:cache
+    web2:B --> T:cache
+    web1:B --> T:primary
+    web2:B --> T:primary
+    primary:B --> T:replica
+    primary:R --> L:backups
 ```
 
 ## Get started
